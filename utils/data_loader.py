@@ -49,23 +49,22 @@ def load_master_dataset():
 
     df = df.merge(dest_airports, on="destination_airport_id", how="left")
 
-    df = df.merge(delays, on="flight_id", how="left")
-
     df.rename(columns={
     "delay_minutes_x": "delay_minutes",
     "delay_minutes_y": "delay_minutes_detail"
     }, inplace=True)
 
     df["scheduled_departure_time"] = pd.to_datetime(df["scheduled_departure_time"])
+    df["scheduled_departure_date"] = pd.to_datetime(df["scheduled_departure_date"])
 
     df["departure_hour"] = df["scheduled_departure_time"].dt.hour
-    df["day_of_week"] = df["scheduled_departure_time"].dt.dayofweek + 1
-    df["month"] = df["scheduled_departure_time"].dt.month
+    df["day_of_week"] = df["scheduled_departure_date"].dt.dayofweek + 1
+    df["month"] = df["scheduled_departure_date"].dt.month
 
     weather["date_time"] = pd.to_datetime(weather["date_time"])
     weather["weather_date"] = weather["date_time"].dt.date
 
-    df["flight_date"] = df["scheduled_departure_time"].dt.date
+    df["flight_date"] = df["scheduled_departure_date"].dt.date
 
     df = df.merge(
         weather,

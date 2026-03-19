@@ -41,7 +41,7 @@ if month_filter != "All":
 airline_stats = (
     df.groupby("airline_name")
     .agg(
-        total_flights=("flight_id","count"),
+        total_flights=("flight_id","nunique"),
         avg_delay=("delay_minutes","mean"),
         cancelled=("flight_status", lambda x: (x=="Cancelled").sum()),
         diverted=("flight_status", lambda x: (x=="Diverted").sum()),
@@ -58,8 +58,8 @@ airline_stats["cancel_rate"] = round(
     airline_stats["cancelled"] / airline_stats["total_flights"] * 100, 2
 )
 
-airline_stats["reliability_score"] = round(
-    airline_stats["on_time_pct"] / airline_stats["avg_delay"], 2
+airline_stats["delay_index"] = round(
+     airline_stats["avg_delay"], 2
 )
 
 # KPI Calculations
@@ -112,27 +112,13 @@ fig_cancel = px.bar(
 )
 
 fig_reliability = px.bar(
-    airline_stats.sort_values("reliability_score",ascending=False),
+    airline_stats.sort_values("delay_index",ascending=False),
     x="airline_name",
-    y="reliability_score",
+    y="delay_index",
     title="Airline Reliability Score",
-    color="reliability_score"
+    color="delay_index"
 )
 
-delay_causes = (
-    df.groupby(["airline_name","delay_type"])["flight_id"]
-    .count()
-    .reset_index()
-)
-
-
-fig_delay_type = px.bar(
-    delay_causes,
-    x="airline_name",
-    y="flight_id",
-    color="delay_type",
-    title="Delay Causes by Airline"
-)
 
 c1,c2 = st.columns(2)
 
@@ -149,5 +135,3 @@ with c3:
 
 with c4:
     st.plotly_chart(fig_reliability, use_container_width=True)
-
-st.plotly_chart(fig_delay_type, use_container_width=True)

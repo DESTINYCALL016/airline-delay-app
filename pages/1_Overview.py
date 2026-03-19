@@ -8,6 +8,8 @@ df = load_master_dataset()
 st.title("✈ Flight Operations Overview")
 st.write("Operational snapshot of airline activity and delay performance")
 
+
+
 # ---------------- SLICERS ----------------
 
 st.sidebar.header("Dashboard Filters")
@@ -41,15 +43,15 @@ if month_filter != "All":
 
 total_flights = df["flight_id"].nunique()
 
-on_time = df[(df["flight_status"] == "On Time") & (df["delay_minutes"].le(15))].shape[0]
-on_time_pct = round((on_time / total_flights) * 100, 2)
+on_time = df[(df["flight_status"] == "On Time") & (df["delay_minutes"] <= 15) & (df["flight_status"] != "Cancelled")]["flight_id"].nunique()
+on_time_pct = round((on_time / df[df["flight_status"] != "Cancelled"]["flight_id"].nunique()) * 100,2)
 
 avg_delay = round(df[df["flight_status"] == "Delayed"]["delay_minutes"].mean(), 2)
 
-cancelled = df[df["flight_status"] == "Cancelled"].shape[0]
+cancelled = df[df["flight_status"] == "Cancelled"]["flight_id"].nunique()
 cancel_rate = round((cancelled / total_flights) * 100, 2)
 
-diverted = df[df["flight_status"] == "Diverted"].shape[0]
+diverted = df[df["flight_status"] == "Diverted"]["flight_id"].nunique()
 divert_rate = round((diverted / total_flights) * 100, 2)
 
 k1,k2,k3,k4,k5 = st.columns(5)

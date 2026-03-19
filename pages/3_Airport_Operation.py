@@ -32,9 +32,9 @@ st.caption("Airport congestion, delay patterns, and traffic distribution")
 airport_stats = (
     df.groupby("origin_airport_code")
     .agg(
-        total_flights=("flight_id","count"),
+        total_flights=("flight_id","nunique"),
         avg_delay=("delay_minutes","mean"),
-        passenger_volume=("origin_passenger_volume","mean"),
+    
         delayed=("flight_status", lambda x: (x=="Delayed").sum())
     )
     .reset_index()
@@ -54,15 +54,14 @@ worst_airport = airport_stats.sort_values(
     "avg_delay",ascending=False
 ).iloc[0]["origin_airport_code"]
 
-avg_passengers = int(airport_stats["passenger_volume"].mean())
 
-k1,k2,k3,k4,k5 = st.columns(5)
+k1,k2,k3,k4, = st.columns(4)
 
 k1.metric("🛫 Airports", total_airports)
 k2.metric("✈ Flights", f"{total_flights:,}")
 k3.metric("⏳ Avg Airport Delay", avg_airport_delay)
 k4.metric("⚠ Highest Delay Airport", worst_airport)
-k5.metric("👥 Avg Passenger Volume", f"{avg_passengers:,}")
+
 
 fig_traffic = px.bar(
     airport_stats.sort_values("total_flights",ascending=False).head(20),
@@ -80,14 +79,6 @@ fig_delay = px.bar(
     color="avg_delay"
 )
 
-fig_congestion = px.scatter(
-    airport_stats,
-    x="passenger_volume",
-    y="avg_delay",
-    size="total_flights",
-    hover_name="origin_airport_code",
-    title="Passenger Volume vs Delay (Airport Congestion)"
-)
 
 fig_delay_rate = px.bar(
     airport_stats.sort_values("delay_rate",ascending=False).head(20),
@@ -105,10 +96,4 @@ with c1:
 with c2:
     st.plotly_chart(fig_delay, use_container_width=True)
 
-c3,c4 = st.columns(2)
-
-with c3:
-    st.plotly_chart(fig_congestion, use_container_width=True)
-
-with c4:
-    st.plotly_chart(fig_delay_rate, use_container_width=True)
+st.plotly_chart(fig_delay_rate, use_container_width=True)

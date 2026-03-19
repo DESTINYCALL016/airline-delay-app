@@ -4,7 +4,7 @@ def total_flights(flights):
 
 def on_time_percentage(flights):
 
-    on_time = flights[flights['flight_status'] == "On Time"].shape[0]
+    on_time = flights[flights['flight_status'] == "On Time") | (flights['delay_minutes'] <= 15)]['flight_id'].nunique()
     total = flights.shape[0]
 
     return round((on_time/total)*100,2)
