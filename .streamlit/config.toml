@@ -1,9 +1,0 @@
-[server]
-headless = true
-port = 8501
-
-[runner]
-magicEnabled = true
-
-[global]
-pythonVersion = "3.10"
