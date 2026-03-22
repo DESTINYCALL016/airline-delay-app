@@ -3,6 +3,11 @@ import streamlit as st
 
 def login_page():
 
+    # ✅ Initialize session state
+    if "authenticated" not in st.session_state:
+        st.session_state.authenticated = False
+
+    # ✅ Styling
     st.markdown(
         """
         <style>
@@ -19,26 +24,32 @@ def login_page():
         unsafe_allow_html=True
     )
 
+    # ✅ Header
     st.markdown("<h1 style='text-align:center;'>✈ Airline Intelligence Hub</h1>", unsafe_allow_html=True)
     st.markdown("<h4 style='text-align:center;'>Flight Delay Analytics Dashboard</h4>", unsafe_allow_html=True)
 
     st.write("")
 
-    col1, col2, col3 = st.columns([1,2,1])
+    col1, col2, col3 = st.columns([1, 2, 1])
 
     with col2:
 
-        username = st.text_input("Username")
-        password = st.text_input("Password", type="password")
+        username = st.text_input("Username", key="username_input")
+        password = st.text_input("Password", type="password", key="password_input")
 
-        if st.button("Login"):
+        login_clicked = st.button("Login", use_container_width=True)
+
+        if login_clicked:
 
             if username == "admin" and password == "admin123":
 
                 st.session_state.authenticated = True
                 st.success("Login successful")
-                st.rerun()
+
+                # ✅ Safe rerun
+                st.experimental_rerun()
 
             else:
-
                 st.error("Invalid username or password")
+
+    return st.session_state.authenticated
